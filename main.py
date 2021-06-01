@@ -17,8 +17,8 @@ def signup(email, password,):
     con.commit()
     con.close()
 
-def posts():
-    sql = "select * from posts;"
+def posts(id):
+    sql = f"select * from posts where user_id = {id};"
     con = sqlite3.connect("date.db")
     cur = con.cursor()
     cur.execute(sql)
@@ -26,8 +26,8 @@ def posts():
     con.close()
     return posts
 
-def add_posts(name, text,tags):
-    sql = f"insert into posts(name, text, tags) values('{name}','{text}', '{tags}');"
+def add_posts(name, text,tags, user_id):
+    sql = f"insert into posts(name, text, tags, user_id) values('{name}','{text}', '{tags}', {user_id});"
     con = sqlite3.connect("date.db")
     cur = con.cursor()
     cur.execute(sql)
@@ -42,8 +42,8 @@ def update_user(id,email, password):
     con.commit()
     con.close()
 
-def get_tags():
-    sql = f"select * from tags;"
+def get_tags(id):
+    sql = f"select * from tags where user_id = {id};"
     con = sqlite3.connect("date.db")
     cur = con.cursor()
     cur.execute(sql)
@@ -51,16 +51,8 @@ def get_tags():
     con.close()
     return tags
 
-def add_tag(name):
-    sql = f"insert into tags(name) values('{name}');"
-    con = sqlite3.connect("date.db")
-    cur = con.cursor()
-    cur.execute(sql)
-    con.commit()
-    con.close()
-
-def add_tag(name):
-    sql = f"insert into tags(name) values('{name}');"
+def add_tag(name, user_id):
+    sql = f"insert into tags(name,user_id) values('{name}', {user_id});"
     con = sqlite3.connect("date.db")
     cur = con.cursor()
     cur.execute(sql)

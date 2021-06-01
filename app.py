@@ -12,7 +12,8 @@ def setup_page():
 @app.route("/index")
 def index_page():
     if "user" in session:
-        return render_template("index.html", posts = posts(), len_posts = len(posts()), tags = get_tags())
+        id = session["user"]
+        return render_template("index.html", posts = posts(id), len_posts = len(posts(id)), tags = get_tags(id))
     return redirect("/signup")
 
 @app.route("/login")
@@ -51,7 +52,7 @@ def signupsave_page():
     for i in emails:
         if i ==email:
             s += 1
-    if s > 0 and password == repeat_password:
+    if s < 1 and password == repeat_password:
         signup(email, password)
         return redirect("/login")
     elif s == 0:
@@ -71,7 +72,8 @@ def logoutuser_page():
 @app.route("/create")
 def create_page():
     if "user" in session:
-        return render_template("create.html", tags = get_tags())
+        id = session["user"]
+        return render_template("create.html", tags = get_tags(id))
     return redirect("/login")
 
 @app.route("/createsave", methods=["post"])
@@ -80,7 +82,8 @@ def createsave_page():
     text = request.form["body"]
     #tags = request.form.getlist("checkbox") not working
     tags = request.form.get("checkbox")
-    add_posts(name,text, tags)
+    user_id = session["user"]
+    add_posts(name,text, tags, user_id)
     flash("Successfully created!")
     return redirect("/index")
 
@@ -106,13 +109,15 @@ def usersave_page():
 @app.route("/tags")
 def tags_page():
     if "user" in session:
-        return render_template("tags.html", tags_count = len(get_tags()), tags = get_tags())
+        id = session["user"]
+        return render_template("tags.html", tags_count = len(get_tags(id)), tags = get_tags(id))
     return redirect("/login")
 
 @app.route("/tagsave", methods=["post"])
 def tagssave_page():
     tags = request.form["tag"]
-    add_tag(tags)
+    user_id = session["user"]
+    add_tag(tags, user_id)
     return redirect("/tags")
 
 @app.route("/delete/<id>")
@@ -140,17 +145,19 @@ def editsave_page():
 @app.route("/tags/<name>")
 def filtered_tags_page(name):
     posts = posts_filter(name)
+    id = session["user"]
     try:
-        return render_template("filtered.html", posts = posts, tags = get_tags())
+        return render_template("filtered.html", posts = posts(id), tags = get_tags(id))
     except:
-        return render_template("filtered.html", msg = "The notes you added will appear here", tags = get_tags())
+        return render_template("filtered.html", msg = "The notes you added will appear here", tags = get_tags(id))
 
 @app.route("/search", methods=["get"])
 def search_page():
     search = request.args.get("search")
     searched = posts_finder(search)
     print(len(searched))
-    return render_template("searched.html", posts = searched, len_posts = len(searched), tags = get_tags())
+    id = session["user"]
+    return render_template("searched.html", posts = searched, len_posts = len(searched), tags = get_tags(id))
 
 if __name__ == "__main__":
     app.run()
