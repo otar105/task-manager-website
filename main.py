@@ -67,8 +67,8 @@ def delete_tag(id):
     con.commit()
     con.close()
 
-def edit_tag(id, name):
-    sql = f"update tags set name = '{name}' where id = {id}"
+def edit_tag(id, name, user_id):
+    sql = f"update tags set name = '{name}' where id = {id} and user_id = {user_id}"
     con = sqlite3.connect("date.db")
     cur = con.cursor()
     cur.execute(sql)

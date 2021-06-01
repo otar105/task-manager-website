@@ -139,7 +139,8 @@ def edittag_page(id):
 @app.route("/editsave", methods=["post"])
 def editsave_page():
     tag = request.form["tag"]
-    edit_tag(editid, tag)
+    user_id = session["user"]
+    edit_tag(editid, tag, user_id)
     return redirect("/tags")
 
 @app.route("/tags/<name>")
