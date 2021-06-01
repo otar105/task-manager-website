@@ -66,12 +66,12 @@
               <button type="button" class="close" data-dismiss="alert">&times;</button>
               {{ message }}
             </div>
-          <a href="/create"><button type="button" class="btn btn-primary">Create note</button></a>
           {% endfor %}
             {% if len_posts == 0: %}
               <p>The notes you added will appear here</p>
             {% else: %}
               {% for i in posts: %}
+              <a href="/create"><button type="button" class="btn btn-primary">Create note</button></a>
                 <div class="col-md-3">
                   <div class="card" style="width: 18rem;">
                     <div class="card-body">
