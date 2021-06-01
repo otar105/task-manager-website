@@ -149,6 +149,7 @@ def filtered_tags_page(name):
 def search_page():
     search = request.args.get("search")
     searched = posts_finder(search)
+    print(len(searched))
     return render_template("searched.html", posts = searched, len_posts = len(searched), tags = get_tags())
 
 if __name__ == "__main__":
