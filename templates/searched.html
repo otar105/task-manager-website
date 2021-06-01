@@ -62,7 +62,9 @@
           </div>
           <div class="col-md-8">
             {% if len_posts == 0: %}
+            <div class="col-md-3">
               <p>The notes you added will appear here</p>
+            </div>
             {% else: %}
               {% for i in posts: %}
                 <div class="col-md-3">
