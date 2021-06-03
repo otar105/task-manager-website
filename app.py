@@ -1,5 +1,16 @@
 from flask import Flask, render_template, request, session, flash, redirect
-from main import edit_tag, users, signup, posts, add_posts, update_user, get_tags, add_tag, delete_tag, tag_info, posts_filter, posts_finder
+from main import edit_tag, users, signup, posts, add_posts, update_user, get_tags, add_tag, delete_tag, tag_info, posts_filter, posts_finder, delete_post, get_posts, edit_post, vefify_email, vefify_codes, delete_code
+import smtplib
+import random
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+
+msg = MIMEMultipart('alternative')
+
+server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+server.login("otoelbakidze2020@gmail.com", "iyazfbrcmtoiebqo")
+
 app = Flask(__name__)
 app.secret_key = "web"
 
@@ -53,13 +64,41 @@ def signupsave_page():
         if i ==email:
             s += 1
     if s < 1 and password == repeat_password:
-        signup(email, password)
-        return redirect("/login")
+        x = "ABCDEFJHIJKLMNOPQRSTUVWXYZ"
+        code = ""
+        for i in range(0,10):
+            code += random.choice(x)
+        print(code)
+        html = f"Confirmation email code: {code}"
+        msg['Subject'] = "No Reply"
+        part1 = MIMEText(html, 'html')
+        msg.attach(part1)
+        server.sendmail("otoelbakidze2020@gmail.com", f"{email}", msg.as_string())
+        flash("Verify your email to verify!")
+        vefify_email(email,password,code)
+        return redirect("/verify")
     elif s == 0:
         flash("email is already used! log in http://localhost:5000/login")
     elif password != repeat_password:
         flash("Passwords dose not match!")
     return redirect("/signup")
+
+@app.route("/verify")
+def verify_page():
+    return render_template("verify.html")
+
+@app.route("/verifysave", methods=["post"])
+def verifysave_page():
+    code = request.form["code"]
+    print(code)
+    codes = vefify_codes()
+    print(codes)
+    for i in codes:
+        if code == i[3]:
+            signup(i[1],i[2])
+            delete_code(i[3])
+            return redirect("/index")
+    return redirect("/")
 
 @app.route("/logout")
 def logoutuser_page():
@@ -159,6 +198,29 @@ def search_page():
     print(len(searched))
     id = session["user"]
     return render_template("searched.html", posts = searched, len_posts = len(searched), tags = get_tags(id))
+
+@app.route("/delete/<id>")
+def post_page(id):
+    return render_template("info.html")
+
+@app.route("/delete/post/<id>")
+def deletepage_page(id):
+    delete_post(id)
+    return redirect("/index")
+
+@app.route("/edit/post/<id>")
+def editpost_page(id):
+    global editpostid
+    editpostid = id
+    user_id = session["user"]
+    return render_template("editpost.html",  tags = get_tags(user_id), posts = get_posts(user_id, id))
+  
+@app.route("/editpostsave", methods=["post"])
+def editpostsave_page():
+    name = request.form["name"]
+    text = request.form["body"]
+    edit_post(name,text, editpostid)
+    return redirect("/index")
 
 if __name__ == "__main__":
     app.run()

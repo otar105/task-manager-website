@@ -101,3 +101,53 @@ def posts_finder(search):
     posts = cur.fetchall()
     con.close()
     return posts
+
+def delete_post(id):
+    sql = f"delete from posts where id = {id};"
+    con = sqlite3.connect("date.db")
+    cur = con.cursor()
+    cur.execute(sql)
+    con.commit()
+    con.close()
+
+def edit_post(name, text, id):
+    sql = f"update posts set name='{name}', text='{text}' where id = {id}"
+    con = sqlite3.connect("date.db")
+    cur = con.cursor()
+    cur.execute(sql)
+    con.commit()
+    con.close()
+
+def get_posts(user_id, id):
+    sql = f"select * from posts where user_id = {user_id} and id = {id};"
+    con = sqlite3.connect("date.db")
+    cur = con.cursor()
+    cur.execute(sql)
+    posts = cur.fetchone()
+    con.close()
+    return posts
+
+def vefify_email(email, password, code):
+    sql = f"insert into verify(email,password,code) values('{email}', '{password}', '{code}');"
+    con = sqlite3.connect("date.db")
+    cur = con.cursor()
+    cur.execute(sql)
+    con.commit()
+    con.close()
+
+def vefify_codes():
+    sql = f"select * from verify;"
+    con = sqlite3.connect("date.db")
+    cur = con.cursor()
+    cur.execute(sql)
+    codes = cur.fetchall()
+    con.close()
+    return codes
+
+def delete_code(code):
+    sql = f"delete from verify where code = '{code}';"
+    con = sqlite3.connect("date.db")
+    cur = con.cursor()
+    cur.execute(sql)
+    con.commit()
+    con.close()
